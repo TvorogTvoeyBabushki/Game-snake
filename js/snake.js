@@ -10,109 +10,137 @@ food.src = './img/apply.png'
 const box = 32
 
 let count = 0
+const maxCount = 6
 let score = 0
 let dir
 
 let apply = {
-    x: Math.floor((Math.random() * 17) + 1) * box,
-    y: Math.floor((Math.random() * 15) + 3) * box
+    x: 0,
+    y: 0
 }
 
-const snake = []
-snake[0] = {
-    x: 9 * box,
+const snake = {
+    x: 8 * box,
     y: 10 * box,
-    dx: box, 
-    dy: 0
+    dx: box,
+    dy: 0,
+    tails: [],
+    maxTails: 3
 }
 
 function drawGame() {
+
     requestAnimationFrame(drawGame)
 
-    if (++count < 4) {
-        return;
+    if (++count < maxCount) {
+        return
     }
 
     count = 0;
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.drawImage(background, 0, 0)
 
     context.drawImage(food, apply.x, apply.y)
 
-    snake.forEach((item, index) => {
-        context.fillStyle = (index === 0) ? 'red' : 'green'
-        context.fillRect(item.x, item.y, box - 1, box - 1)
+    snake.x += snake.dx
+    snake.y += snake.dy
+
+    collisionBorder()
+
+    snake.tails.unshift({
+        x: snake.x,
+        y: snake.y
     })
 
-    let snakeX = snake[0].x
-    let snakeY = snake[0].y
+    if (snake.tails.length > snake.maxTails) {
+        snake.tails.pop()
+    }
 
-    if (snakeX === apply.x && snakeY === apply.y) {
-        score++
-        apply = {
-            x: Math.floor((Math.random() * 17) + 1) * box,
-            y: Math.floor((Math.random() * 15) + 3) * box
+    snake.tails.forEach((item, index) => {
+        if (index === 0) {
+            context.fillStyle = 'red'
+        } else {
+            context.fillStyle = 'green'
         }
-    } else {
-        snake.pop()
-    }
+        context.fillRect(item.x, item.y, box - 1, box - 1)
 
-    if (dir === 'left') snakeX -= box
-    if (dir === 'right') snakeX += box
-    if (dir === 'up') snakeY -= box
-    if (dir === 'down') snakeY += box
+        if (item.x === apply.x && item.y === apply.y) {
+            snake.maxTails++
+            score++
+            randomPositionApply()
+        }
 
-    if (snakeX < box) {
-        snakeX = canvas.width - box * 2
-    } else if (snakeX > canvas.width - box * 2) {
-        snakeX = box
-    } else if (snakeY < 3 * box) {
-        snakeY = canvas.height - box * 2
-    } else if (snakeY > canvas.height - box * 2) {
-        snakeY = 3 * box
-    }
-
-    const newHead = {
-        x: snakeX,
-        y: snakeY
-    }
-
-    eatTail(newHead, snake)
-
-    snake.unshift(newHead)
+        for (let i = index + 1; i < snake.tails.length; i++) {
+            if (item.x === snake.tails[i].x && item.y === snake.tails[i].y) {
+                refreshGame()
+            }
+        }
+    })
 
     context.fillStyle = 'white'
     context.font = '50px Arial'
     context.fillText(score, box * 2.5, box * 1.7)
 }
 
-function eatTail(head, arr) {
-    arr.forEach(item => {
-        if (head.x === item.x && head.y === item.y) {
-            snake.x = 9 * box
-            snake.y = 10 * box
-            apply = {
-                x: Math.floor((Math.random() * 17) + 1) * box,
-                y: Math.floor((Math.random() * 15) + 3) * box
-            }
-        }
-    })
+function collisionBorder() {
+    if (snake.x < box) {
+        snake.x = canvas.width - box * 2
+    } else if (snake.x > canvas.width - box * 2) {
+        snake.x = box
+    } else if (snake.y < 3 * box) {
+        snake.y = canvas.height - box * 2
+    } else if (snake.y > canvas.height - box * 2) {
+        snake.y = 3 * box
+    }
+}
+
+function randomPositionApply() {
+    apply = {
+        x: Math.floor((Math.random() * 17) + 1) * box,
+        y: Math.floor((Math.random() * 15) + 3) * box
+    }
+
+}
+randomPositionApply()
+
+function refreshGame() {
+    score = 0
+
+    snake.x = 8 * box
+    snake.y = 10 * box
+    snake.tails = []
+    snake.maxTails = 3
+    snake.dx = box
+    snake.dy = 0
+
+    randomPositionApply()
 }
 
 document.addEventListener('keydown', (event) => {
     if (event.keyCode === 37 && dir !== 'right') {
         dir = 'left'
+        snake.dx = -box
+        snake.dy = 0
     } else if (event.keyCode === 38 && dir !== 'down') {
         dir = 'up'
+        snake.dx = 0
+        snake.dy = -box
     } else if (event.keyCode === 39 && dir !== 'left') {
         dir = 'right'
+        snake.dx = box
+        snake.dy = 0
     } else if (event.keyCode === 40 && dir !== 'up') {
         dir = 'down'
+        snake.dx = 0
+        snake.dy = box
     }
 })
 
 let game = setInterval(requestAnimationFrame(drawGame), 100)
 
-// 1. не работает сброс при столкновение змейки со своим телом
-// 2. нужно уменьшить скорость змейки
-// 3. 
+// 1. не работает сброс при столкновение змейки со своим телом +
+// 2. нужно уменьшить скорость змейки -
+// 3. яблоко появляеться внутри самой змейки -
+// 4. сделать лучший ран -
+// 5. сделать ооп
