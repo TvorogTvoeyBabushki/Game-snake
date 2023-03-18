@@ -121,12 +121,12 @@ function randomPositionApply() {
 randomPositionApply()
 
 function refreshGame() {
-    Number(localStorage.setItem('bestScore', score))
-
     if (score > bestScore) {
-        bestScore = localStorage.getItem('bestScore')
+        localStorage.setItem('bestScore', score)
     }
+    bestScore = Number(localStorage.getItem('bestScore'))
     score = 0
+    alert('Game Over')
 
     snake.x = 8 * box
     snake.y = 10 * box
