@@ -8,11 +8,10 @@ const food = new Image()
 food.src = './img/apply.png'
 
 const box = 32
-
-let count = 0
-const maxCount = 6
 let score = 0
+let bestScore = 0
 let dir
+let speedGame = 1
 
 let apply = {
     x: 0,
@@ -29,15 +28,6 @@ const snake = {
 }
 
 function drawGame() {
-
-    requestAnimationFrame(drawGame)
-
-    if (++count < maxCount) {
-        return
-    }
-
-    count = 0;
-    context.clearRect(0, 0, canvas.width, canvas.height);
 
     context.drawImage(background, 0, 0)
 
@@ -68,6 +58,22 @@ function drawGame() {
         if (item.x === apply.x && item.y === apply.y) {
             snake.maxTails++
             score++
+
+            localStorage.setItem('bestScore', score)
+
+            switch (score) {
+                case 10:
+                    speedGame += 0.05
+                case 20:
+                    speedGame += 0.05
+                case 30:
+                    speedGame += 0.05
+                case 40:
+                    speedGame += 0.05
+            }
+            clearInterval(game)
+            game = setInterval(drawGame, 100 / speedGame)
+
             randomPositionApply()
         }
 
@@ -81,6 +87,10 @@ function drawGame() {
     context.fillStyle = 'white'
     context.font = '50px Arial'
     context.fillText(score, box * 2.5, box * 1.7)
+
+    context.fillStyle = 'white'
+    context.font = '50px Arial'
+    context.fillText(`best: ${bestScore}`, box * 5, box * 1.7)
 }
 
 function collisionBorder() {
@@ -105,14 +115,21 @@ function randomPositionApply() {
 randomPositionApply()
 
 function refreshGame() {
+    if(score > bestScore) {
+        bestScore = localStorage.getItem('bestScore')
+    } 
     score = 0
-
+    
     snake.x = 8 * box
     snake.y = 10 * box
     snake.tails = []
     snake.maxTails = 3
     snake.dx = box
     snake.dy = 0
+
+    speedGame = 1
+    clearInterval(game)
+    game = setInterval(drawGame, 100 / speedGame)
 
     randomPositionApply()
 }
@@ -137,10 +154,11 @@ document.addEventListener('keydown', (event) => {
     }
 })
 
-let game = setInterval(requestAnimationFrame(drawGame), 100)
+window.onload = () => localStorage.getItem('bestScore')
+let game = setInterval(drawGame, 100 / speedGame)
 
 // 1. не работает сброс при столкновение змейки со своим телом +
-// 2. нужно уменьшить скорость змейки -
-// 3. яблоко появляеться внутри самой змейки -
+// 2. нужно уменьшить скорость змейки +
+// 3. яблоко появляеться внутри самой змейки +
 // 4. сделать лучший ран -
-// 5. сделать ооп
+// 5. сделать ооп - 
