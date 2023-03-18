@@ -9,7 +9,7 @@ food.src = './img/apply.png'
 
 const box = 32
 let score = 0
-let bestScore = 0
+let bestScore
 let dir
 let speedGame = 1
 
@@ -25,6 +25,12 @@ const snake = {
     dy: 0,
     tails: [],
     maxTails: 3
+}
+
+if (localStorage.getItem('bestScore')) {
+    bestScore = Number(localStorage.getItem('bestScore'))
+} else {
+    bestScore = 0
 }
 
 function drawGame() {
@@ -59,7 +65,7 @@ function drawGame() {
             snake.maxTails++
             score++
 
-            localStorage.setItem('bestScore', score)
+            // localStorage.setItem('bestScore', score)
 
             switch (score) {
                 case 10:
@@ -115,11 +121,13 @@ function randomPositionApply() {
 randomPositionApply()
 
 function refreshGame() {
-    if(score > bestScore) {
+    Number(localStorage.setItem('bestScore', score))
+
+    if (score > bestScore) {
         bestScore = localStorage.getItem('bestScore')
-    } 
+    }
     score = 0
-    
+
     snake.x = 8 * box
     snake.y = 10 * box
     snake.tails = []
@@ -154,7 +162,6 @@ document.addEventListener('keydown', (event) => {
     }
 })
 
-window.onload = () => localStorage.getItem('bestScore')
 let game = setInterval(drawGame, 100 / speedGame)
 
 // 1. не работает сброс при столкновение змейки со своим телом +
