@@ -65,8 +65,6 @@ function drawGame() {
             snake.maxTails++
             score++
 
-            // localStorage.setItem('bestScore', score)
-
             switch (score) {
                 case 10:
                     speedGame += 0.05
@@ -126,7 +124,6 @@ function refreshGame() {
     }
     bestScore = Number(localStorage.getItem('bestScore'))
     score = 0
-    alert('Game Over')
 
     snake.x = 8 * box
     snake.y = 10 * box
@@ -140,6 +137,7 @@ function refreshGame() {
     game = setInterval(drawGame, 100 / speedGame)
 
     randomPositionApply()
+    alert('Game Over')
 }
 
 document.addEventListener('keydown', (event) => {
@@ -167,5 +165,5 @@ let game = setInterval(drawGame, 100 / speedGame)
 // 1. не работает сброс при столкновение змейки со своим телом +
 // 2. нужно уменьшить скорость змейки +
 // 3. яблоко появляеться внутри самой змейки +
-// 4. сделать лучший ран -
+// 4. сделать лучший ран +
 // 5. сделать ооп - 
