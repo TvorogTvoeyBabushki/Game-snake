@@ -10,7 +10,7 @@ food.src = './img/apply.png'
 const box = 32
 let score = 0
 let bestScore
-let dir
+let dir = 'right'
 let speedGame = 1
 
 let apply = {
@@ -124,6 +124,7 @@ function refreshGame() {
     }
     bestScore = Number(localStorage.getItem('bestScore'))
     score = 0
+    dir = 'right'
 
     snake.x = 8 * box
     snake.y = 10 * box
@@ -161,9 +162,3 @@ document.addEventListener('keydown', (event) => {
 })
 
 let game = setInterval(drawGame, 100 / speedGame)
-
-// 1. не работает сброс при столкновение змейки со своим телом +
-// 2. нужно уменьшить скорость змейки +
-// 3. яблоко появляеться внутри самой змейки +
-// 4. сделать лучший ран +
-// 5. сделать ооп - 
