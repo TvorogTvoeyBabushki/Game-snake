@@ -15,12 +15,7 @@ class Canvas {
 class Config {
     constructor() {
         this.box = 32
-    }
-
-    _speedGame = 1
-
-    get speedGame() {
-        return this._speedGame
+        this.speedGame = 1
     }
 }
 
@@ -62,7 +57,7 @@ class Snake {
     }
 
     updata() {
-        setTimeout(this.updata.bind(this), 100 / config._speedGame)
+        setTimeout(this.updata.bind(this), 100 / config.speedGame)
 
         this.x += this.dx
         this.y += this.dy
@@ -89,23 +84,9 @@ class Snake {
         this.tails.forEach((item, index) => {
             if (item.x === apply.x && item.y === apply.y) {
                 this.maxTails++
-                score._score++
-    
-                switch (score._score) {
-                    case 10:
-                        config._speedGame += 0.01
-                    case 20:
-                        config._speedGame += 0.01
-                    case 30:
-                        config._speedGame += 0.01
-                    case 40:
-                        config._speedGame += 0.01
-                    case 50:
-                        config._speedGame += 0.01
-                }
-                
-                gameLoop = setInterval(game.draw, 100 / config._speedGame)
-    
+
+                score.increaseScore()
+                score.increaseSpeed()
                 apply.randomPositionApply()
             }
 
@@ -129,24 +110,20 @@ class Snake {
     }
 
     refreshGame() {
-        if (score._score > score._bestScore) {
-            localStorage.setItem('bestScore', score._score)
-        }
-        score._bestScore = Number(localStorage.getItem('bestScore'))
-        score._score = 0
+        score.refreshScore()
         this.dir = 'right'
-    
+
         this.x = 8 * config.box
         this.y = 10 * config.box
         this.tails = []
         this.maxTails = 3
         this.dx = config.box
         this.dy = 0
-    
-        config._speedGame = 1
+
+        config.speedGame = 1
         clearInterval(gameLoop)
-        gameLoop = setInterval(game.draw, 100 / config._speedGame)
-    
+        gameLoop = setInterval(game.draw, 100 / config.speedGame)
+
         apply.randomPositionApply()
 
         alert('Game Over')
@@ -176,36 +153,63 @@ class Snake {
 }
 
 class Score {
+    #score
+    #bestScore 
 
-    _score = 0
-    _bestScore = 0
-
-    get score() {
-        return this._score
+    constructor() {
+        this.#score = 0
+        this.#bestScore = 0
     }
 
-    get bestScore() {
-        return this._bestScore
+    increaseScore() {
+        this.#score++
+    }
+
+    increaseSpeed() {
+        switch (score.#score) {
+            case 10:
+                config.speedGame += 0.02
+            case 20:
+                config.speedGame += 0.02
+            case 30:
+                config.speedGame += 0.02
+            case 40:
+                config.speedGame += 0.02
+            case 50:
+                config.speedGame += 0.02
+        }
+
+        gameLoop = setInterval(game.draw, 100 / config.speedGame)
+    }
+
+    refreshScore() {
+        if (this.#score > score.#bestScore) {
+            localStorage.setItem('bestScore', this.#score)
+        }
+        score.#bestScore = Number(localStorage.getItem('bestScore'))
+        this.#score = 0
+    }
+
+    localStorageScore() {
+        if (localStorage.getItem('bestScore')) {
+            score.#bestScore = Number(localStorage.getItem('bestScore'))
+        } else {
+            score.#bestScore = 0
+        }
     }
 
     draw() {
         canvas.context.fillStyle = 'white'
         canvas.context.font = '50px Arial'
-        canvas.context.fillText(this._score, config.box * 2.5, config.box * 1.7)
-    
+        canvas.context.fillText(this.#score, config.box * 2.5, config.box * 1.7)
+
         canvas.context.fillStyle = 'white'
         canvas.context.font = '50px Arial'
-        canvas.context.fillText(`best: ${this._bestScore}`, config.box * 5, config.box * 1.7)
+        canvas.context.fillText(`best: ${this.#bestScore}`, config.box * 5, config.box * 1.7)
     }
 }
 
 class Game {
-    constructor() {
-    }
-
-    updata() {
-        snake.updata()
-    }
 
     draw() {
         canvas.draw()
@@ -222,10 +226,6 @@ let score = new Score()
 
 const game = new Game()
 
-if (localStorage.getItem('bestScore')) {
-    score._bestScore = Number(localStorage.getItem('bestScore'))
-} else {
-    score._bestScore = 0
-}
+score.localStorageScore()
 
-let gameLoop = setInterval(game.draw, 100 / config._speedGame)
+let gameLoop = setInterval(game.draw, 100 / config.speedGame)
