@@ -15,7 +15,7 @@ class Canvas {
 class Config {
     constructor() {
         this.box = 32
-        this.speedGame = 1
+        this.speedGame = 0.6
     }
 }
 
@@ -120,9 +120,9 @@ class Snake {
         this.dx = config.box
         this.dy = 0
 
-        config.speedGame = 1
+        config.speedGame = 0.6
         clearInterval(gameLoop)
-        gameLoop = setInterval(game.draw, 100 / config.speedGame)
+        gameLoop = setInterval(game.draw, 100)
 
         apply.randomPositionApply()
 
@@ -154,7 +154,7 @@ class Snake {
 
 class Score {
     #score
-    #bestScore 
+    #bestScore
 
     constructor() {
         this.#score = 0
@@ -168,18 +168,29 @@ class Score {
     increaseSpeed() {
         switch (score.#score) {
             case 10:
-                config.speedGame += 0.02
+                config.speedGame += 0.2
+                break
             case 20:
-                config.speedGame += 0.02
+                config.speedGame += 0.2
+                break
             case 30:
-                config.speedGame += 0.02
+                config.speedGame += 0.2
+                break
             case 40:
-                config.speedGame += 0.02
+                config.speedGame += 0.2
+                break
             case 50:
-                config.speedGame += 0.02
+                config.speedGame += 0.2
+                break
+            case 60:
+                config.speedGame += 0.2
+                break
+            case 70:
+                config.speedGame += 0.2
+                break
         }
 
-        gameLoop = setInterval(game.draw, 100 / config.speedGame)
+        gameLoop = setInterval(game.draw, 100)
     }
 
     refreshScore() {
@@ -210,7 +221,6 @@ class Score {
 }
 
 class Game {
-
     draw() {
         canvas.draw()
         apply.draw()
@@ -228,4 +238,4 @@ const game = new Game()
 
 score.localStorageScore()
 
-let gameLoop = setInterval(game.draw, 100 / config.speedGame)
+let gameLoop = setInterval(game.draw, 100)
